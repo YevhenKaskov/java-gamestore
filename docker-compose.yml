@@ -1,23 +1,36 @@
-version: '3.8'
-
 services:
-  postgres:
-    image: postgres:16
-    container_name: game-store-postgres
+  db:
+    container_name: db
+    image: "postgres:latest"
+    environment:
+      POSTGRES_DB: ${DB_NAME:-postgresdb}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-dbpassword}
+      POSTGRES_USER: ${DB_USER:-postgres}
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-postgresdb}' ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
 
-    env_file:
-      - .env
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
 
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: db
+      DB_PORT: ${DB_PORT:-5432}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-dbpassword}
+      DB_NAME: ${DB_NAME:-postgresdb}
+
+      JAVA_TOOL_OPTIONS: "-Duser.timezone=UTC"
 
     ports:
-      - "${DB_PORT}:5432"
-
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-
-volumes:
-  pgdata:
+      - "8080:8080"

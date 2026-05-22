@@ -31,7 +31,7 @@ public class GameEntity {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "genre")
+    @JoinColumn(name = "genre_id", nullable = false)
     private GenreEntity genre;
 
     @Column(name = "price", nullable = false)
