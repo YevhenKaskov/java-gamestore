@@ -48,10 +48,10 @@ spec:
               value: "postgres"
 
           envFrom:
-            - configMapRef:
-                name: ecommerce-config
             - secretRef:
                 name: ecommerce-secret
+            - configMapRef:
+                name: ecommerce-config
 
           livenessProbe:
             httpGet:
