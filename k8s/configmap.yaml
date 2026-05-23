@@ -2,8 +2,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: ecommerce-config
-
 data:
-  DB_HOST: db
+  DB_HOST: postgres
   DB_PORT: "5432"
   DB_NAME: gamestore
+  DB_USER: postgres
