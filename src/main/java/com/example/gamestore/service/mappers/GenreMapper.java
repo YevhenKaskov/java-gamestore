@@ -1,16 +1,22 @@
 package com.example.gamestore.service.mappers;
 
 import com.example.gamestore.domain.Genre;
+import com.example.gamestore.dto.GenreDto;
 import com.example.gamestore.entity.GenreEntity;
+import org.mapstruct.*;
 
-public class GenreMapper {
+import java.util.List;
 
-    public static Genre toDomain(GenreEntity entity) {
-        if (entity == null) return null;
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+public interface GenreMapper {
+    GenreEntity toGenreEntity(Genre genre);
 
-        return Genre.builder()
-                .id(entity.getId())
-                .name(entity.getName())
-                .build();
-    }
+    Genre toGenre(GenreEntity entity);
+
+    List<Genre> toGenreList(Iterable<GenreEntity> entities);
+
+    @Mapping(target = "id", ignore = true)
+    Genre toGenre(GenreDto dto);
+
+    GenreDto toGenreDto(Genre genre);
 }

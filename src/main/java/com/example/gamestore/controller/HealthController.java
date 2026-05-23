@@ -16,9 +16,7 @@ public class HealthController {
 
     @GetMapping("/health")
     public ResponseEntity<Void> health() {
-        boolean healthy = healthService.isHealthy();
-
-        return healthy
+        return healthService.isHealthy()
                 ? ResponseEntity.ok().build()
                 : ResponseEntity.status(503).build();
     }
