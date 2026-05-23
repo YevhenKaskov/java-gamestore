@@ -16,7 +16,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GameEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

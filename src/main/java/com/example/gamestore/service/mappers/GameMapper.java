@@ -1,31 +1,19 @@
 package com.example.gamestore.service.mappers;
 
 import com.example.gamestore.domain.Game;
+import com.example.gamestore.dto.GameRequestDto;
 import com.example.gamestore.entity.GameEntity;
+import org.mapstruct.*;
 
-public class GameMapper {
+import java.util.List;
 
-    public static Game toDomain(GameEntity entity) {
-        if (entity == null) return null;
+@Mapper(componentModel = "spring", uses = GenreMapper.class)
+public interface GameMapper {
+    Game toGame(GameEntity entity);
 
-        return Game.builder()
-                .id(entity.getId())
-                .title(entity.getTitle())
-                .studio(entity.getStudio())
-                .description(entity.getDescription())
-                .price(entity.getPrice())
-                .build();
-    }
+    List<Game> toGameList(Iterable<GameEntity> entities);
 
-    public static GameEntity toEntity(Game domain) {
-        if (domain == null) return null;
-
-        GameEntity entity = new GameEntity();
-        entity.setId(domain.getId());
-        entity.setTitle(domain.getTitle());
-        entity.setStudio(domain.getStudio());
-        entity.setDescription(domain.getDescription());
-        entity.setPrice(domain.getPrice());
-        return entity;
-    }
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "genre", ignore = true)
+    GameEntity toGameEntity(GameRequestDto dto);
 }

@@ -6,36 +6,33 @@ import com.example.gamestore.entity.GenreEntity;
 import com.example.gamestore.repository.GenreRepository;
 import com.example.gamestore.service.GenreService;
 import com.example.gamestore.service.exception.GenreNotFoundException;
-import jakarta.persistence.PersistenceException;
+import com.example.gamestore.service.mappers.GenreMapper;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class GenreServiceImpl implements GenreService {
 
     private final GenreRepository genreRepository;
-
-    public GenreServiceImpl(GenreRepository genreRepository) {
-        this.genreRepository = genreRepository;
-    }
+    private final GenreMapper genreMapper;
 
     @Override
     @Transactional(readOnly = true)
     public List<Genre> getAllGenres() {
-        List<Genre> result = new ArrayList<>();
-        genreRepository.findAll().forEach(e -> result.add(toGenre(e)));
-        return result;
+        return genreMapper.toGenreList(genreRepository.findAll());
     }
 
     @Override
     @Transactional(readOnly = true)
     public Genre getGenreById(Long id) {
-        GenreEntity entity = genreRepository.findById(id)
-                .orElseThrow(() -> new GenreNotFoundException(id));
-        return toGenre(entity);
+        return genreMapper.toGenre(
+                genreRepository.findById(id)
+                        .orElseThrow(() -> new GenreNotFoundException(id))
+        );
     }
 
     @Override
@@ -44,11 +41,9 @@ public class GenreServiceImpl implements GenreService {
         GenreEntity entity = new GenreEntity();
         entity.setName(dto.getName());
 
-        try {
-            return toGenre(genreRepository.save(entity));
-        } catch (Exception e) {
-            throw new PersistenceException(e);
-        }
+        return genreMapper.toGenre(
+                genreRepository.save(entity)
+        );
     }
 
     @Override
@@ -59,23 +54,14 @@ public class GenreServiceImpl implements GenreService {
 
         entity.setName(dto.getName());
 
-        try {
-            return toGenre(genreRepository.save(entity));
-        } catch (Exception e) {
-            throw new PersistenceException(e);
-        }
+        return genreMapper.toGenre(
+                genreRepository.save(entity)
+        );
     }
 
     @Override
     @Transactional
     public void deleteGenre(Long id) {
         genreRepository.deleteById(id);
-    }
-
-    private Genre toGenre(GenreEntity e) {
-        return Genre.builder()
-                .id(e.getId())
-                .name(e.getName())
-                .build();
     }
 }
