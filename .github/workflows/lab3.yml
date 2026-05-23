@@ -14,10 +14,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Build image
+        run: docker build -t ecommerce-app:ci .
+
       - name: Create KinD cluster
         uses: helm/kind-action@v1.12.0
         with:
           cluster_name: lab3
+
+      - name: Load image into KinD
+        run: kind load docker-image ecommerce-app:ci --name lab3
 
       - name: Apply Kubernetes manifests
         run: kubectl apply -f k8s/

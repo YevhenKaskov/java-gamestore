@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
         - name: ecommerce-app
-          image: ghcr.io/yevhenkaskov/ecommerce-app:latest
+          image: ecommerce-app:ci
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
 
