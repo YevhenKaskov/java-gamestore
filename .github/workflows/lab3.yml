@@ -1,0 +1,40 @@
+name: Lab 3 Kubernetes Validation
+
+on:
+  push:
+    branches:
+      - main
+      - lab-3
+
+jobs:
+  validate-k8s:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t ecommerce-app:ci .
+
+      - name: Create KinD cluster
+        uses: helm/kind-action@v1.12.0
+        with:
+          cluster_name: lab3
+
+      - name: Load image into KinD
+        run: kind load docker-image ecommerce-app:ci --name lab3
+
+      - name: Apply Kubernetes manifests
+        run: kubectl apply -f k8s/
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y jq curl
+
+      - name: Wait for rollout
+        run: kubectl rollout status deployment/ecommerce-app --timeout=60s
+
+      - name: Run grading script
+        run: |
+          chmod +x ./tests/lab3_test.sh
+          ./tests/lab3_test.sh
